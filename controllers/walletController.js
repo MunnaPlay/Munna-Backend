@@ -5,28 +5,30 @@ const Users = require("../models/userModel");
 
 const addMoney = asyncHandler(async (req, res) => {
   const {mobile, amount } = req.body;
-  const isUser = await userExist({ mobile });
+  const isUser = await Users({ mobile });
   if (isUser) {
-    // await updateOTP({ mobile, otp });
-    // const newUpdate = await userExist({ mobile });
+    const walletUpdate = await Users.updateOne({mobile}, {
+      $set:{
+        'wallet.amount':parseInt(amount) + parseInt(isUser.wallet.amount)
+      }
+    })
+    if(walletUpdate)
+    {
+      return res.status(200).json({
+        data: '',
+        status: true,
+        msg: "Wallet Update",
+      });
+    }
+  }
+  else
+  {
     return res.status(200).json({
-      data: "",
+      data: '',
       status: false,
-      msg: "User already exists",
+      msg: "User Not Exist",
     });
   }
-  const user = new Users({
-    fullName,
-    mobile,
-    otp,
-    pin,
-  });
-  await user.save();
-  return res.status(200).json({
-    data: user,
-    status: true,
-    msg: "OTP sent to mobile",
-  });
 });
 
 
