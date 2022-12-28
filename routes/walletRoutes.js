@@ -2,17 +2,9 @@
 
 const router = require("express").Router();
 const {
-  getAllUsers,
-  createUser,
-  isExistUser,
-  verifyUser,
-  addInfo,
+  addMoney
 } = require("../controllers/walletController");
 
-router.route("/").get(getAllUsers);
-router.route("/createUser").post(createUser);
-router.route("/verifyOTP").post(verifyUser);
-router.route("/isExistUser").post(isExistUser);
-router.route("/addInfo").post(addInfo);
+router.route("/addMoney").post(addMoney);
 
 module.exports = router;
