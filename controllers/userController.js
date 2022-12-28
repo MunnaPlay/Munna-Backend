@@ -58,7 +58,6 @@ const isExistUser = asyncHandler(async (req, res) => {
   const otp = generateOtp();
   const user = await Users.findOne({ mobile });
   if (user) {
-    console.log("user", JSON.stringify(user));
     const updatedUser = await Users.findOneAndUpdate(
       {
         mobile,
@@ -89,8 +88,6 @@ const createUser = asyncHandler(async (req, res) => {
   const otp = generateOtp();
   const isUser = await userExist({ mobile });
   if (isUser) {
-    // await updateOTP({ mobile, otp });
-    // const newUpdate = await userExist({ mobile });
     return res.status(200).json({
       data: "",
       status: false,
@@ -100,6 +97,9 @@ const createUser = asyncHandler(async (req, res) => {
   const user = new Users({
     fullName,
     mobile,
+    wallet:{
+      amount:0
+    },
     otp,
     pin,
   });

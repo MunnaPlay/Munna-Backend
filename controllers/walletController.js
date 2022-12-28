@@ -5,29 +5,24 @@ const Users = require("../models/userModel");
 
 const addMoney = asyncHandler(async (req, res) => {
   const {mobile, amount } = req.body;
-  const isUser = await Users({ mobile });
-  if (isUser) {
-    const walletUpdate = await Users.updateOne({mobile}, {
+  const isUser = await Users.findOne({mobile:mobile});
+  if(isUser)
+  {
+    const updateWallet = await Users.updateOne({
+      mobile:mobile
+    },{
       $set:{
-        'wallet.amount':parseInt(amount) + parseInt(isUser.wallet.amount)
+        'wallet.amount':amount + isUser.wallet.amount
       }
-    })
-    if(walletUpdate)
+    });
+    if(updateWallet)
     {
       return res.status(200).json({
-        data: '',
+        data: {},
         status: true,
-        msg: "Wallet Update",
+        msg: "Money has been added",
       });
     }
-  }
-  else
-  {
-    return res.status(200).json({
-      data: '',
-      status: false,
-      msg: "User Not Exist",
-    });
   }
 });
 
