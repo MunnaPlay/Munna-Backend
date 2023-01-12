@@ -3,6 +3,8 @@ var cors = require("cors");
 const routes = require("./routes");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
+const {createGames} = require('./crons');
+
 require("./database/DB");
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +14,8 @@ app.use(express.json());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(routes);
+
+createGames();
 
 app.listen(PORT, (error) => {
   if (!error)

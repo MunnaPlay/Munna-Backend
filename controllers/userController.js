@@ -2,6 +2,7 @@
 
 const asyncHandler = require("express-async-handler");
 const Users = require("../models/userModel");
+const Razorpay = require('razorpay');
 // var FCM = require('fcm-node');
 // var serverKey = 'AAAAo_KvWbA:APA91bETioVyoZtzDhmmB07xCxR5Adpmm1iJSinwNS2NPGz-mk2dHwWzRaIV6xI81rKCG46iwgpKMDK07tgGUhiyC4s4Z9oVpG1tkwsHaczHayabV_AesUDOXhU1DzL2UmMSh15wGbXr'; //put your server key here
 // var fcm = new FCM(serverKey);
@@ -23,7 +24,18 @@ const Users = require("../models/userModel");
 // const messaging = getMessaging(app);
 
 const getAllUsers = asyncHandler(async (req, res) => {
+  var instance = new Razorpay({
+    key_id: 'rzp_test_iUA7sfu0AzAFxv',
+    key_secret: 'ekSUU2m864Z1dHAYg0Jbah2e',
+  });
+  const response = await instance.orders.create({
+    amount: 50000,
+    currency: "INR",
+    receipt: "receipt#2"
+  })
+
   return res.status(200).json({
+    data:response,
     status: true,
     msg: "ISD Codes fetched successfully",
   });
