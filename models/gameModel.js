@@ -2,12 +2,15 @@ const mongoose = require('mongoose');
 
 const gamesSchema = mongoose.Schema(
   {
+    gameId:String,
     name: String,
     status:String,
-    entryStartsAt:String,
-    entryEndsAt:String,
-    resultTime:String,
-    result:Number
+    entryOpenTime:Date,
+    entryCloseTime:Date,
+    resultTime:Date,
+    lastDayResult:Number,
+    todayResult:Number,
+    everyDayResultTime:String
   },
   { timestamps: true }
 );

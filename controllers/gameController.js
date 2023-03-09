@@ -8,7 +8,7 @@ const getAllGames = asyncHandler(async (req, res) => {
   if(isGames)
   {
     return res.status(200).json({
-      data: {isGames},
+      data: {games:isGames},
       status: true,
       msg: "game data has been fetched",
     });
@@ -24,24 +24,23 @@ const getAllGames = asyncHandler(async (req, res) => {
 });
 
 const createGame = asyncHandler(async (req, res) => {
-  const {name} = req.body;
-  const isGames = await Games.find();
-  if(isGames)
-  {
-    return res.status(200).json({
-      data: {isGames},
-      status: true,
-      msg: "game data has been fetched",
-    });
-  }
-  else
-  {
-    return res.status(200).json({
-      data: {},
-      status: false,
-      msg: "no games found",
-    });
-  }
+  const game = new Games({
+    gameId:'DESHWAR5AM',
+    name: "Desawar (देशावर)",
+    status:'Upcoming',
+    entryOpenTime:Date.now(),
+    entryCloseTime:Date.now(),
+    resultTime:Date.now(),
+    lastDayResult:45,
+    todayResult:32,
+    everyDayResultTime:'5 AM'
+  });
+  game.save()
+  return res.status(200).json({
+    data: {},
+    status: false,
+    msg: "no games found",
+  });
 });
 
 

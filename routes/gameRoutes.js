@@ -7,7 +7,7 @@ const {
 } = require("../controllers/gameController");
 
 router.route("/getAllGames").get(getAllGames);
-router.route("/createGame").post(createGame);
+router.route("/createGame").get(createGame);
 
 
 
