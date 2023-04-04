@@ -9,6 +9,7 @@ const userSchema = mongoose.Schema(
     },
     otp:String,
     pin: String,
+    email:String,
     wallet:{
         amount:Number
     },

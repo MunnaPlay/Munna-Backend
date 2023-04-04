@@ -1,27 +1,6 @@
-/** @format */
-
 const asyncHandler = require("express-async-handler");
 const Users = require("../models/userModel");
-const Razorpay = require('razorpay');
-// var FCM = require('fcm-node');
-// var serverKey = 'AAAAo_KvWbA:APA91bETioVyoZtzDhmmB07xCxR5Adpmm1iJSinwNS2NPGz-mk2dHwWzRaIV6xI81rKCG46iwgpKMDK07tgGUhiyC4s4Z9oVpG1tkwsHaczHayabV_AesUDOXhU1DzL2UmMSh15wGbXr'; //put your server key here
-// var fcm = new FCM(serverKey);
-// import { initializeApp } from 'firebase/app';
-// import { getMessaging } from "firebase/messaging";
 
-// const firebaseConfig = {
-//   apiKey: "AIzaSyAxRg10dJcrM0vW3ZkVvkMSjwmElcIq0H4",
-//   authDomain: "hindishayari-20a94.firebaseapp.com",
-//   databaseURL: "https://hindishayari-20a94-default-rtdb.asia-southeast1.firebasedatabase.app",
-//   projectId: "hindishayari-20a94",
-//   storageBucket: "hindishayari-20a94.appspot.com",
-//   messagingSenderId: "704151247280",
-//   appId: "1:704151247280:web:8780b6a8bbfb9abd639e75",
-//   measurementId: "G-LLDJJKNXJZ"
-// };
-
-// const app = initializeApp(firebaseConfig);
-// const messaging = getMessaging(app);
 
 const getAllUsers = asyncHandler(async (req, res) => {
   var instance = new Razorpay({
@@ -96,7 +75,7 @@ const isExistUser = asyncHandler(async (req, res) => {
 });
 
 const createUser = asyncHandler(async (req, res) => {
-  const { fullName, mobile, pin } = req.body;
+  const { fullName, mobile } = req.body;
   const otp = generateOtp();
   const isUser = await userExist({ mobile });
   if (isUser) {
@@ -128,22 +107,86 @@ const generateOtp = () => {
 };
 
 const userExist = async ({ mobile }) => {
-  const isUser = await Users.findOne({ mobile });
+  const isUser = await Users.findOne({ mobile },{fullName:1, mobile:1, otp:1,email:1});
   return isUser;
 };
 
-const updateOTP = async ({ mobile, otp }) => {
-  await Users.updateOne({ mobile }, { otp });
-};
-
 const addInfo = asyncHandler(async (req, res) => {
-  const { mobile, fullName, pin } = req.body;
-  const updatedUser = await Users.updateOne({ mobile }, { fullName, pin });
+  const { mobile, fullName, email } = req.body;
+  const updatedUser = await Users.updateOne({ mobile }, { fullName, email });
   if (updatedUser) {
     return res.status(200).json({
       data: updatedUser,
       status: true,
       msg: "Profile Updated",
+    });
+  }
+});
+
+const sendOTP = asyncHandler(async (req, res) => {
+  const { mobile } = req.body;
+  const otp = generateOtp();
+  const isUser = await userExist({ mobile });
+  if (isUser) {
+    const updateOTP = await Users.updateOne({
+      mobile:mobile
+    },{
+      $set:{
+        otp:otp
+      }
+    });
+    const updatedUser = await userExist({ mobile });
+    return res.status(200).json({
+      isUserExist:true,
+      userInfo:updatedUser,
+      msg: "User already exists",
+    });
+  }
+  else
+  {
+    const user = new Users({
+      mobile,
+      wallet:{
+        amount:0
+      },
+      otp,
+    });
+    await user.save();
+    return res.status(200).json({
+      isUserExist:false,
+      mobile:mobile,
+      otp:otp,
+      msg: "OTP sent to mobile",
+    });
+  }
+});
+
+const verifyOTP = asyncHandler(async (req, res) => {
+  const { mobile, otp } = req.body;
+  const isUser = await userExist({ mobile });
+  if (isUser) {
+    if(isUser.otp==otp)
+    {
+      return res.status(200).json({
+        isUserExist:true,
+        userInfo:isUser,
+        status:true,
+        msg: "OTP verified",
+      });
+    }
+    else
+    {
+      return res.status(200).json({
+        status:false,
+        msg: "wrong OTP",
+      });
+    }
+  }
+  else
+  {
+    return res.status(200).json({
+      status:false,
+      msg: "User not exist",
     });
   }
 });
@@ -154,4 +197,6 @@ module.exports = {
   verifyUser,
   isExistUser,
   addInfo,
+  verifyOTP,
+  sendOTP
 };
