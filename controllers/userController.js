@@ -116,7 +116,9 @@ const addInfo = asyncHandler(async (req, res) => {
   const updatedUser = await Users.updateOne({ mobile }, { fullName, email });
   if (updatedUser) {
     return res.status(200).json({
-      data: updatedUser,
+      data: {
+        mobile, fullName, email
+      },
       status: true,
       msg: "Profile Updated",
     });
@@ -139,6 +141,7 @@ const sendOTP = asyncHandler(async (req, res) => {
     return res.status(200).json({
       isUserExist:true,
       userInfo:updatedUser,
+      status:true,
       msg: "User already exists",
     });
   }
@@ -154,8 +157,7 @@ const sendOTP = asyncHandler(async (req, res) => {
     await user.save();
     return res.status(200).json({
       isUserExist:false,
-      mobile:mobile,
-      otp:otp,
+      userInfo:user,
       msg: "OTP sent to mobile",
     });
   }
